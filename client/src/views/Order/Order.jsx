@@ -1,34 +1,43 @@
-import React from 'react'
+import React , {useState} from 'react'
 import axios from 'axios'
+import { createOrder , processOrder } from '../../api/payment'
+import {useSelector} from 'react-redux'
 
-const Order = () => {
+const Order = (props) => {
 
-    const handleClick = () => {
+    const user = useSelector(state => state.user)
+
+    const handleClick = async() => {
+        let amount = 100;
+        let currency = "USD"
+        const order = await createOrder({ amount });
+        const creationId = order.id
 
         var options = {
-            "key_id": 'rzp_test_fCu8x5wS9kGoii',
-            "amount": 5000, 
-            "currency": "INR",
+            "key_id": process.env.REACT_APP_KEY_ID,
+            "amount": 1234, 
+            "currency": currency,
             "name": "test",
             "description": "Booking Request amount for ",
             "image": "https://example.com/your_logo",
-            "order_id": 'order_G6UAnR7pl3G0nh',
+            "order_id": creationId,
             handler: async function (response) {
                 const data = {
-                    orderCreationId: 'order_G6UAnR7pl3G0nh',
+                    orderCreationId: creationId,
                     razorpayPaymentId: response.razorpay_payment_id,
                     razorpayOrderId: response.razorpay_order_id,
                     razorpaySignature: response.razorpay_signature,
+                    userId: user._id,
+                    amount
                 };
-
-                const result = await axios.post("http://localhost:5000/api/payment/success", data);
-
-                alert(result.data.msg);
+                const result = await processOrder(data)
+                console.log("res" , result)
+                // alert(result.msg);
             },
             "prefill": {
-            //   "name": this.state.guest.name,
-            //   "email": this.state.guest.email,
-            //   "contact": this.state.guest.phone,
+              "name": 'test',
+              "email": 'test@gmail.com',
+              "contact": 9999999999,
             },
             "notes": {
               "address": "note value"
@@ -40,6 +49,10 @@ const Order = () => {
 
         let rzp = new window.Razorpay(options);
         rzp.open();
+    }
+
+    if(props.auth === false) {
+        return 'login to continue'
     }
 
     return (

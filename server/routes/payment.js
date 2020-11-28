@@ -4,39 +4,44 @@ const Razorpay = require("razorpay");
 const crypto = require('crypto');
 require("dotenv").config();
 
-router.post("/orders", async (req, res) => {
+const Transaction = require('../models/Transaction')
+
+router.post("/order", async (req, res) => {
     try {
         const instance = new Razorpay({
             key_id: process.env.RAZORPAY_KEY_ID,
             key_secret: process.env.RAZORPAY_SECRET,
         });
+        const { amount } = req.body;
+        if(!amount) {
+            return res.status(500).send('amount not provided')
+        }
         
         const options = {
-            amount: 50000, // amount in smallest currency unit
-            currency: "INR",
-            receipt: "receipt_order_74394",
+            amount: req.body.amount * 100, // amount in smallest currency unit
+            currency: "USD",
+            // receipt: "receipt_order_74394",
         };
 
         const order = await instance.orders.create(options);
-
         console.log("order" , order)
-        
         if (!order) return res.status(500).send("Some error occured");
 
         res.json(order);
     } catch (error) {
-        res.status(500).send(error);
+        return res.status(500).send(error);
     }
 });
 
-router.post("/success", async (req, res) => {
+router.post("/success", async (req, res) => {    
     try {
-        // getting the details back from our font-end
         const {
             orderCreationId,
             razorpayPaymentId,
             razorpayOrderId,
             razorpaySignature,
+            userId,
+            amount
         } = req.body;
 
         const shasum = crypto.createHmac("sha256", "w2lBtgmeuDUfnJVp43UpcaiT");
@@ -44,11 +49,25 @@ router.post("/success", async (req, res) => {
         const digest = shasum.digest("hex");
 
         // comaparing our digest with the actual signature
-        if (digest !== razorpaySignature)
-            return res.status(400).json({ msg: "Transaction not legit!" });
+        // if (digest !== razorpaySignature)
+        //     return res.status(400).json({ msg: "Transaction not legit!" });
 
-        // THE PAYMENT IS LEGIT & VERIFIED
         // YOU CAN SAVE THE DETAILS IN YOUR DATABASE IF YOU WANT
+
+        const transaction = new Transaction({
+            creationId: orderCreationId, 
+            paymentId: razorpayPaymentId,
+            orderId: razorpayOrderId,
+            signature:razorpaySignature,
+            userId: userId,
+            amount 
+        })
+
+        await transaction.save(function (err) {
+            if (err) { 
+              return res.status(500).json({ msg: err.message }); 
+            }
+        })
 
         res.json({
             msg: "success",
