@@ -42,9 +42,9 @@ router.post('/' , auth ,  [
   ], async(req,res) => {
 
     try {
-        const { name,description,price } = req.body
+        const { name,description,price,image,quantity,brand } = req.body
         const product = new Product({
-            name,description,price
+            name,description,price,image,quantity,brand
         })
         await product.save((err , data) => {
             if (err) { 

@@ -20,6 +20,7 @@ const Register = () => {
 
     return (
         <div style={{width: "50vh" , margin: "auto" , marginTop: '10vh'}}>
+             <h3>Register</h3>
             <Formik initialValues={{name:'' , email: '', password: ''}} 
           onSubmit={handleLogin}
           // onSubmit={handleLogin}
@@ -54,7 +55,7 @@ const Register = () => {
                     </div>
                     <button type="submit" className="btn btn-primary">Submit</button>
                     <br />
-                    <NavLink to={'/register'} ><span style={{paddingTop: '10px' }} >Register instead? </span></NavLink>
+                    <NavLink to={'/login'} ><span style={{paddingTop: '10px' }} >Login instead? </span></NavLink>
                     </Form>
                 )}
                 />

@@ -12,19 +12,20 @@ router.post("/order", async (req, res) => {
             key_id: process.env.RAZORPAY_KEY_ID,
             key_secret: process.env.RAZORPAY_SECRET,
         });
-        const { amount } = req.body;
+        const { amount , currency } = req.body;
         if(!amount) {
             return res.status(500).send('amount not provided')
         }
-        
+        if(currency === undefined) {
+            return res.status(500).send('currency not provided')
+        }
         const options = {
-            amount: req.body.amount * 100, // amount in smallest currency unit
-            currency: "USD",
+            amount: amount, // amount in smallest currency unit
+            currency: currency,
             // receipt: "receipt_order_74394",
         };
 
         const order = await instance.orders.create(options);
-        console.log("order" , order)
         if (!order) return res.status(500).send("Some error occured");
 
         res.json(order);

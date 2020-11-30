@@ -2,6 +2,7 @@ import React , {useState , useEffect} from 'react'
 import { useSelector , useDispatch } from 'react-redux'
 import {Route} from 'react-router-dom'
 import {isAuth} from '../api/auth'
+import Loader from '../components/Loader/loader'
 
 const PrivateRoute = ({component:Component , ...props}) => {
 
@@ -21,7 +22,7 @@ const PrivateRoute = ({component:Component , ...props}) => {
     } , [])
 
     if(loading) {
-        return 'loading'
+        return <Loader />
     }
 
     return <Route {...props} render={(props) => 

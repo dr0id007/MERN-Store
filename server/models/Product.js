@@ -9,9 +9,6 @@ const ProductSchema = new Schema({
   image: {
     type: String
   },
-  imageKey: {
-    type: String
-  },
   description: {
     type: String,
     trim: true
@@ -22,14 +19,17 @@ const ProductSchema = new Schema({
   price: {
     type: Number
   },
-  taxable: {
-    type: Boolean,
-    default: false
-  },
   brand: {
-    type: Schema.Types.ObjectId,
-    ref: 'Brand',
+    type: String,
     default: null
+  },
+  rating: {
+    type: Number,
+    default: 0
+  },
+  reviewCount: {
+    type: Number,
+    default: 0
   },
   updated: Date,
   created: {

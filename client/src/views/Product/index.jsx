@@ -1,15 +1,22 @@
 import React , {useState , useEffect} from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams , useHistory , NavLink } from 'react-router-dom'
 import {getProductById} from '../../api/product';
 import styled from 'styled-components'
 import { BsBag } from 'react-icons/bs'
+import { useDispatch , useSelector } from 'react-redux'
+import { Row, Col, Image, ListGroup, Card, Button, Form } from 'react-bootstrap'
+import Rating from '../../components/Reviews/Rating'
+import Reviews from './Reviews'
+import Loader from '../../components/Loader/loader'
 
 const ProductView = (props) => {
 
     const { id } = useParams()
-    console.log("props" , id)
     const [loading , setLoading ] = useState(true)
     const [data , setData] = useState('')
+    const dispatch = useDispatch()
+    const history = useHistory()
+    const [quantity , setQuantity] = useState(1)
 
     const init =  async() => {
         const res = await getProductById(id)
@@ -22,71 +29,108 @@ const ProductView = (props) => {
         init()   
     } , [])
 
+    const handleAddToCart = async() => {
+        await dispatch({ type: 'ADD_PRODUCT' , payload: {...data , quantity} })
+        history.push('/order')
+    }
+
     if(loading) {
-        return 'loading..'
+        return <Loader />
     }
 
     return (
-        <MainWrapper>
-            <LeftSection>
-            <img className="img-fluid d-block mx-auto" src="https://raw.githubusercontent.com/solodev/bootstrap-cards-shopping-cart/master/images/gear-tshirt.jpg" alt="Mission T-Shirts Gear Image" />
-            </LeftSection>
-            <RightSection>
-                <Head>{data.name}</Head>
-                <Hr />
-                <Text>See more from Brand</Text>
-                <Text>{data.description}</Text>
-                <Price>$ {data.price}</Price>
-                <Small>Quantity</Small>
-                <input type="number" defaultValue={1} />
-                <br />
-                <Btn>Remove from Bag <BsBag/> </Btn>
+        <>
+        <div className="container">
+         <NavLink className='btn btn-light my-3' to='/'>
+            Go Back
+        </NavLink>
+        <title>{data.name}</title>
+        <Row>
+            <Col md={6}>
+              <Image src={data.image} alt={data.name} fluid />
+            </Col>
+            <Col md={3}>
+              <ListGroup variant='flush'>
+                <ListGroup.Item>
+                  <h3>{data.name}</h3>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <Rating
+                    value={data.rating}
+                    text={`${data.reviewCount || 0} reviews`}
+                  />
+                </ListGroup.Item>
+                <ListGroup.Item>Price: ${data.price}</ListGroup.Item>
+                <ListGroup.Item>
+                  Description: {data.description}
+                </ListGroup.Item>
+              </ListGroup>
+            </Col>
+            <Col md={3}>
+              <SideCard>
+                <ListGroup variant='flush'>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Price:</Col>
+                      <Col>
+                        <strong>${data.price}</strong>
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    <Row>
+                      <Col>Status:</Col>
+                      <Col>
+                        {'In Stock'}
+                        {/* {data.countInStock > 0 ? 'In Stock' : 'Out Of Stock'} */}
+                      </Col>
+                    </Row>
+                  </ListGroup.Item>
 
-            </RightSection>
-        </MainWrapper>
+                    <ListGroup.Item>
+                      <Row>
+                        <Col>Qty</Col>
+                        <Col>
+                          <Form.Control
+                            as='select'
+                            // value={qty}
+                            // onChange={(e) => setQty(e.target.value)}
+                          >
+                              {'1'}
+                            {/* {[...Array(product.countInStock).keys()].map(
+                              (x) => (
+                                <option key={x + 1} value={x + 1}>
+                                  {x + 1}
+                                </option>
+                              )
+                            )} */}
+                          </Form.Control>
+                        </Col>
+                      </Row>
+                    </ListGroup.Item>
+
+                    <ListGroup.Item>
+                    <Button
+                      onClick={handleAddToCart}
+                      className='btn-block'
+                      type='button'
+                    //   disabled={product.countInStock === 0}
+                    >
+                      Add To Cart
+                    </Button>
+                  </ListGroup.Item>
+                </ListGroup>
+                </SideCard>
+            </Col>
+        </Row>
+        <Reviews />
+        </div>
+        </>
     )
 }
 
-const MainWrapper = styled.div`
-    display: flex;
-    width: 50%;
-    margin: auto;
-    margin-top: 10%;
-`;
-
-const LeftSection = styled.section`
-    max-width: 400px;
-    max-height: 500px;
-`;
-const RightSection = styled.section`
-    background:#f6f7f8;
-    margin-left: 20px;
-    width: 100%;
-    padding: 10px;
-`;
-
-const Head = styled.p`
-    font-size: 22px;
-`;
-
-const Text = styled.p`
-    font-size: 14px;
-`;
-const Price = styled.p`
-    font-weight: bold;
-`;
-
-const Small = styled.p`
-    font-size: 12px;
-    margin-bottom: 0px;
-`;
-
-const Hr = styled.hr`
-    width: 90%;
-`;
-
-const Btn = styled.button`
-    
+const SideCard = styled(Card)`
+    max-width: 250px;
 `;
 
 export default ProductView

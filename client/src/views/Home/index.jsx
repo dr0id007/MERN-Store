@@ -1,6 +1,6 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {mapStateToProps} from '../../reducers/reducer'
+// import {mapStateToProps} from '../../reducers/reducer'
 import { useDispatch , useSelector } from 'react-redux'
 import CardView from './CardView'
 import styled from 'styled-components'
