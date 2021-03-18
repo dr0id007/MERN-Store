@@ -5,6 +5,7 @@ const config = require('config');
 const bodyParser = require('body-parser');
 const path = require('path');
 const app = express();
+require('dotenv').config();
 
 app.use(cors());
 app.use(bodyParser.json());
