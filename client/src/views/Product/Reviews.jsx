@@ -2,14 +2,14 @@ import React from 'react'
 import { Row, Col, Image, ListGroup, Card, Button, Form } from 'react-bootstrap'
 
 const Reviews = (props) => {
-    return (
-        <>
-            <Row style={{marginTop: '20px'}}>
-            <Col md={6}>
-              <h2>Reviews</h2>
-              <text>No reviews</text>
-              {/* {product.reviews.length === 0 && <Message>No Reviews</Message>} */}
-              {/* <ListGroup variant='flush'>
+	return (
+		<>
+			<Row style={{ marginTop: '20px' }}>
+				<Col md={6}>
+					<h2>Reviews</h2>
+					<h4>No reviews</h4>
+					{/* {product.reviews.length === 0 && <Message>No Reviews</Message>} */}
+					{/* <ListGroup variant='flush'>
                 {product.reviews.map((review) => (
                   <ListGroup.Item key={review._id}>
                     <strong>{review.name}</strong>
@@ -70,10 +70,10 @@ const Reviews = (props) => {
                   )}
                 </ListGroup.Item>
               </ListGroup> */}
-            </Col>
-          </Row>
-        </>
-    )
+				</Col>
+			</Row>
+		</>
+	)
 }
 
 export default Reviews
